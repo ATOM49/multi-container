@@ -9,3 +9,16 @@ before_install:
 
 script:
   - docker run -e CI=true atom49/multi-container-test npm test
+
+after_sucess:
+  - docker build -t atom49/multi-client ./client
+  - docker build -t atom49/multi-ngnix ./ngnix
+  - docker build -t atom49/multi-server ./server
+  - docker build -t atom49/multi-worker ./worker
+  # Log in to Docker Hub
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  # Take the images and push them to Docker Hub
+  - docker push atom49/multi-client
+  - docker push atom49/multi-ngnix
+  - docker push atom49/multi-server
+  - docker push atom49/multi-worker
